@@ -1,4 +1,6 @@
-# Headers de Canal Asaas - Configuração
+---
+title: "Headers Asaas - Configuração"
+---
 
 Este sistema automaticamente adiciona headers customizados a todas as requisições para a API do Asaas, permitindo identificar o canal/parceria de origem das transações.
 
@@ -37,10 +39,12 @@ O sistema obtém automaticamente a referência do tenant/loja através da seguin
 ## Arquivos Modificados
 
 ### Novos Arquivos
+
 - `app/Services/OriginChannelHeaders.php` - Serviço responsável por gerar os headers dinâmicos
 - `docs/asaas_origin_headers.md` - Esta documentação
 
 ### Arquivos Modificados
+
 - `config/asaas.php` - Adicionadas configurações dos headers de origem
 - `app/Providers/AppServiceProvider.php` - Registrado o serviço no container
 - `vendor/leopaulo88/asaas-sdk-laravel/src/Support/AsaasClient.php` - Modificado `getHeaders()` para incluir headers dinâmicos
@@ -48,6 +52,7 @@ O sistema obtém automaticamente a referência do tenant/loja através da seguin
 ## Exemplo de Headers Enviados
 
 Com as configurações:
+
 ```bash
 ASAAS_ORIGIN_HEADERS_ENABLED=true
 ASAAS_ORIGIN_HEADER=https://nortgraf.com.br
@@ -81,9 +86,10 @@ tail -f storage/logs/laravel.log | grep -E "OriginChannelHeaders|AsaasClient"
 
 ## Importante
 
-⚠️ **Modificação do Vendor**: O arquivo `vendor/leopaulo88/asaas-sdk-laravel/src/Support/AsaasClient.php` foi modificado. 
+⚠️ **Modificação do Vendor**: O arquivo `vendor/leopaulo88/asaas-sdk-laravel/src/Support/AsaasClient.php` foi modificado.
 
 **Recomendações**:
+
 - Considere fazer um fork do pacote e usar sua versão
 - Ou use patches do Composer (`cweagans/composer-patches`)
 - Documente esta modificação para atualizações futuras do pacote
@@ -302,6 +308,7 @@ Adicionada seção sobre headers de canal na documentação principal do módulo
 ### 8. Exemplo de Requisição Resultante
 
 Com configuração:
+
 ```bash
 ASAAS_ORIGIN_HEADERS_ENABLED=true
 ASAAS_ORIGIN_HEADER=https://nortgraf.com.br
@@ -334,12 +341,14 @@ Origin-Channel-External-Reference: loja_42
 Para testar se está funcionando:
 
 1. **Verificar configuração**:
+
 ```bash
 php artisan tinker
 >>> config('asaas.origin_headers')
 ```
 
 2. **Testar geração de headers**:
+
 ```bash
 php artisan tinker
 >>> $service = app(\App\Services\OriginChannelHeaders::class);
@@ -348,6 +357,7 @@ php artisan tinker
 ```
 
 3. **Monitorar logs**:
+
 ```bash
 tail -f storage/logs/laravel.log | grep -E "OriginChannelHeaders|AsaasClient"
 ```
@@ -361,13 +371,14 @@ tail -f storage/logs/laravel.log | grep -E "OriginChannelHeaders|AsaasClient"
 
 ### 11. Manutenção e Atualizações
 
-**Importante para futuras atualizações do pacote `leopaulo88/asaas-sdk-laravel`:**
+**`Importante para futuras atualizações do pacote leopaulo88/asaas-sdk-laravel:`**
 
 1. **Backup da modificação**: Salve o diff do `AsaasClient.php`
 2. **Monitor de atualizações**: Use `composer show leopaulo88/asaas-sdk-laravel`
 3. **Reaplicação**: Após atualizar o pacote, reaplicar a modificação no `getHeaders()`
 
 **Opções recomendadas**:
+
 - Fork do repositório: `git clone` + modificação + `composer.json` apontando para seu fork
 - Patches do Composer: Use `cweagans/composer-patches` para automatizar a aplicação
 
@@ -434,9 +445,10 @@ protected function getCurrentTenantReference(): ?string
 ```
 
 **Benefícios**:
+
 - ✅ **current_loja** tem prioridade máxima (funciona em todos os contextos)
 - ✅ Subdomínio só é extraído de domínios `*.nortgraf.com.br` (evita problemas com domínios customizados)
-- ✅ Fallback garantido para CLI, jobs sem contexto 
+- ✅ Fallback garantido para CLI, jobs sem contexto
 - ✅ Logging melhorado com trace apenas em ambiente local
 
 ### 2. Atualização de Variáveis de Ambiente com Nomenclatura Melhorada
@@ -546,6 +558,7 @@ ASAAS_DEFAULT_EXTERNAL_REFERENCE=system
 **Plano de Teste Direto**:
 
 1. **Configurar ambiente**:
+
 ```bash
 ASAAS_ORIGIN_HEADERS_ENABLED=true
 ASAAS_ORIGIN_VALUE=nortgraf-platform
@@ -554,6 +567,7 @@ ASAAS_DEFAULT_EXTERNAL_REFERENCE=system
 ```
 
 2. **Criar pagamento PIX sandbox**:
+
 ```php
 // Em algum controller/test
 $payment = $asaasService->createPixPayment([
@@ -564,11 +578,13 @@ $payment = $asaasService->createPixPayment([
 ```
 
 3. **Verificar logs**:
+
 ```bash
 tail -f storage/logs/laravel.log | grep "\[AsaasClient\]"
 ```
 
 **Expected Output**:
+
 ```
 [2025-01-21 15:30:42] local.DEBUG: [AsaasClient] Headers de canal aplicados {
     "enabled": true,
@@ -582,21 +598,25 @@ tail -f storage/logs/laravel.log | grep "\[AsaasClient\]"
 ### 6. Benefícios das Melhorias
 
 **Robustez Multi-tenant**:
+
 - ✅ Funciona consistentemente em web, CLI, queue, jobs
 - ✅ Nunca "chuta" subdomínio de domínios customizados do cliente
 - ✅ Sempre tem fallback funcional
 
 **Segurança**:
+
 - ✅ Logging limitado, não expõe tokens
 - ✅ Graceful degradation se serviço falhar
 - ✅ Validações de contexto antes de extract
 
 **Manutenibilidade**:
+
 - ✅ Nomes de variáveis mais claros
 - ✅ Debug temporário para validação
 - ✅ Documentação completa atualizada
 
 **Compatibilidade**:
+
 - ✅ Backwards-compatible com configurações existentes
 - ✅ Zero breaking changes no comportamento
 - ✅ Funciona com todos os métodos existentes do Asaas
