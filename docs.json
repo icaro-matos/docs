@@ -30,7 +30,9 @@
           },
           {
             "group": "Módulos",
-            "pages": []
+            "pages": [
+              "estoque"
+            ]
           },
           {
             "group": "Pagamento",

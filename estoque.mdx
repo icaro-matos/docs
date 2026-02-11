@@ -1,0 +1,229 @@
+---
+title: "Módulo de Estoque"
+---
+
+Este documento descreve como o modulo de estoque funciona hoje, quais tabelas e componentes usa, e a diretriz de consolidacao para usar somente as tabelas de estoque padronizadas.
+
+## Visao geral
+
+O modulo de estoque permite:
+
+- cadastrar itens (insumos, produtos, embalagens e outros) em \`estoque_itens\`.
+
+- registrar movimentacoes (entrada, saida, ajuste) e atualizar o saldo.
+
+- consultar historico de movimentacoes por filtros.
+
+## Tabelas usadas (padrao desejado)
+
+Diretriz: manter apenas as tabelas abaixo para controle de estoque e insumos:
+
+- \`estoque_itens\`
+
+- \`estoque_movimentacoes\`
+
+- \`estoque_ajustes\`
+
+- \`estoque_categorias\`
+
+As tabelas \`insumos\` e \`movimentacoes_estoque\` devem deixar de ser usadas.
+
+## Componentes principais
+
+### Models
+
+- \`EstoqueItem\` (tabela \`estoque_itens\`)
+
+  - Armazena dados do item: tipo, unidade, custo, saldo, fornecedor, categoria.
+
+  - Campos de conversao: \`quantidade_por_caixa\`, \`quantidade_por_pacote\`, \`quantidade_por_rolo\`.
+
+  - Relacoes: \`fornecedor\`, \`categoria\`, \`movimentacoes\`.
+
+- \`EstoqueMovimentacao\` (tabela \`estoque_movimentacoes\`)
+
+  - Armazena movimentacoes do item: tipo, quantidade, saldo anterior, saldo resultante, observacao, usuario.
+
+  - Guarda o que foi informado no movimento: \`quantidade_informada\` e \`unidade_informada\`.
+
+  - Relacoes: \`item\`, \`user\`.
+
+- \`movimentacoes_estoque\` (tabela legada)
+
+  - Removido do codigo do modulo (nao ha model ativa no app atual).
+
+  - Diretriz: manter somente historico, sem novos registros.
+
+### Controllers
+
+- \`Admin/EstoqueController\`
+
+  - Lista itens com filtros.
+
+  - Registra entrada/saida/ajuste via \`EstoqueService\`.
+
+  - Lista movimentacoes (usa \`EstoqueMovimentacao\`).
+
+- \`Admin/EstoqueMovimentacaoController\`
+
+  - Lista movimentacoes e permite cadastro manual.
+
+  - Usa \`EstoqueService\` para registrar movimentos manuais.
+
+- \`Admin/EstoqueItemController\`
+
+  - CRUD de itens de estoque.
+
+- Rotas de \`Insumos\`
+
+  - O modulo admin de insumos nao esta exposto nas rotas do app (rotas removidas).
+
+  - O fluxo deve usar \`estoque_itens\` com tipo \`insumo\`.
+
+### Service
+
+- \`EstoqueService\`
+
+  - Faz o fluxo de entrada/saida/ajuste.
+
+  - Agora trabalha somente com \`EstoqueItem\` e grava em \`estoque_movimentacoes\`.
+
+  - Mantem compatibilidade com \`Product\` via \`estoque_item_id\` (produto aponta para o item de estoque).
+
+  - Registra \`origem_tipo\` e \`origem_id\` quando aplicavel (ex.: compra/pedido).
+
+  - Converte unidade informada para unidade base e grava \`quantidade_informada\`/\`unidade_informada\`.
+
+  - Bloqueia saldo negativo (saida com saldo insuficiente e ajuste negativo).
+
+## Fluxos principais
+
+### 1) Cadastro de item
+
+1. Usuario cria item em \`EstoqueItemController\`.
+
+2. Saldo inicial vai para \`quantidade_atual\`.
+
+3. Item aparece no painel de estoque.
+
+### 2) Movimentacao via modal (painel de estoque)
+
+1. Usuario abre modal de movimentacao na tela de estoque.
+
+2. Usuario informa quantidade e unidade (base, caixa, pacote, rolo, m2 quando disponivel).
+
+3. Controller chama \`EstoqueService-\>registrarMovimentacao\`.
+
+4. Service converte para unidade base, calcula novo saldo e bloqueia saldo negativo.
+
+5. Atualiza \`estoque_itens\` (saldo e valor_total).
+
+6. Grava a movimentacao em \`estoque_movimentacoes\` com \`quantidade_informada\`/\`unidade_informada\`.
+
+### 3) Movimentacao manual (tela de movimentacoes)
+
+1. Usuario registra a movimentacao manual.
+
+2. Controller chama \`EstoqueService\`.
+
+3. Service converte unidade informada, atualiza \`estoque_itens\` e grava em \`estoque_movimentacoes\`.
+
+## Relacao com produtos
+
+A relacao com \`Product\` permanece. O produto aponta para o item de estoque via \`estoque_item_id\`, mantendo a integracao com precos e rotinas de producao. O estoque de itens continua sendo a base de controle.
+
+Para composicao de custos/insumos no cadastro do produto, o pivot \`insumos_produto\` passa a apontar para \`estoque_itens\` (tipo \`insumo\`).
+
+## Diretriz de consolidacao
+
+- Padronizar o registro de movimentacoes em \`estoque_movimentacoes\`.
+
+- Evitar uso de \`movimentacoes_estoque\` (legado).
+
+- Evitar uso da tabela \`insumos\` para controle de estoque; o item do estoque com tipo \`insumo\` deve ser suficiente.
+
+## Pontos de atencao
+
+- Existem dois fluxos de movimentacao (modal e tela de movimentacoes), ambos centralizados no \`EstoqueService\`.
+
+- \`EstoqueService\` nao depende mais de \`Insumo\` nem de \`movimentacoes_estoque\`.
+
+- O front (views) segue operando com \`estoque_itens\` e \`estoque_movimentacoes\`.
+
+- O modulo admin de insumos foi desativado no app (rotas removidas), evitando CRUD em \`insumos\`.
+
+- Conversoes disponiveis: \`caixa\`, \`pacote\`, \`rolo\` (via fatores no item) e \`m2\` (apenas para itens base \`folha\` com \`largura\`/\`altura\` em cm).
+
+## Atualizacoes realizadas
+
+- \`EstoqueService\` passou a operar exclusivamente com \`EstoqueItem\` e gravar em \`estoque_movimentacoes\`.
+
+- Movimentações agora registram \`origem_tipo\` e \`origem_id\` quando aplicável (ex.: compra/pedido).
+
+- Relação entre \`Product\` e movimentações atualizada para usar \`estoque_item_id\` → \`estoque_movimentacoes\`.
+
+- Cadastro de insumos em produto agora lista itens em \`estoque_itens\` (tipo \`insumo\`).
+
+- Rotas/CRUD antigos de \`insumos\` removidos para evitar duplicidade de fluxo.
+
+- Migrações adicionadas (e aplicadas):
+
+  - Adiciona campos \`quantidade_informada\` e \`unidade_informada\` em \`estoque_movimentacoes\` (audit).
+
+  - Adiciona campos de conversão em \`estoque_itens\`: \`quantidade_por_caixa\`, \`quantidade_por_pacote\`, \`quantidade_por_rolo\`.
+
+- Model \`EstoqueMovimentacao\`: adicionadas constantes de tipo (\`TIPO_ENTRADA\`, \`TIPO_SAIDA\`, \`TIPO_AJUSTE\`) para uso consistente nas controllers.
+
+- Views / UI:
+
+  - Modal de movimentação (\`resources/views/admin/estoque/\_modal_movimentacao.blade.php\`) foi atualizado:
+
+    - Componente registrado via \`Alpine.data\` no \`alpine:init\` para garantir disponibilidade do \`x-data\` quando Alpine inicializa.
+
+    - Permite selecionar unidade informada (base, caixa, pacote, rolo e \`m2\` quando aplicável).
+
+    - Exibe \`Estoque atual: \<valor\> \<unidade\>\` (formatação pt-BR) para evitar ambiguidade sobre a unidade do saldo.
+
+    - Recebe \`quantidade_atual\` do painel e mostra o saldo com unidade.
+
+    - Sugere a "unidade mais natural" ao abrir o modal (prioridade: \`rolo\`, \`caixa\`, \`pacote\`, \`m2\` para itens \`folha\`, senão unidade base).
+
+    - Exibe regras de conversão para \`m2\` (dimensões em cm) quando aplicável.
+
+    - Erros de conversão/validação são exibidos inline no modal (mensagens padronizadas), evitando alert boxes.
+
+  - \`resources/views/admin/estoque/index.blade.php\`: botões de ação (\`entrada/saida/ajuste\`) agora enviam no payload \`quantidade_atual\` e fatores de conversão para o modal.
+
+- Controllers:
+
+  - \`EstoqueController\` e \`EstoqueMovimentacaoController\` foram adaptados para aceitar \`quantidade_informada\` e \`unidade_informada\` e delegar ao \`EstoqueService\`.
+
+  - Tratamento de erros convertido para respostas JSON quando a requisição espera JSON (modal), com mensagens que o modal exibe inline.
+
+- \`EstoqueItem\` model: campos de conversão adicionados ao fillable (\`quantidade_por_caixa\`, \`quantidade_por_pacote\`, \`quantidade_por_rolo\`).
+
+- Lógica de conversão:
+
+  - \`EstoqueService\` implementou métodos para converter \`caixa/pacote/rolo\` para unidade base usando os fatores armazenados no item.
+
+  - Implementada conversão para \`m2\` apenas para itens com unidade base \`folha\` usando \`largura\` e \`altura\` informadas; regra refinada: dimensões são tratadas como centímetros (cm) para o cálculo.
+
+  - Validações: bloqueia conversões quando fatores/dimensões faltam ou são inválidos; bloqueia saída que geraria saldo negativo.
+
+## Detalhes de UI / UX aplicados
+
+- Ao abrir o modal, o campo de unidade vem pré-selecionado com a \`unidade sugerida\` (ex.: se \`quantidade_por_rolo\` existe, o select abre em \`rolo\`).
+
+- O modal mostra o estoque atual com unidade explícita — exemplo: "Estoque atual: 1.000 m" — evitando confusão se o usuário pensa que "1" é da unidade natural.
+
+- Mensagens de erro retornadas pelo serviço são mapeadas para texto amigável e mostradas inline no modal; ainda há espaço para refinar mensagens específicas (saldo x conversão x dimensões).
+
+## Infra / migração
+
+- As migrações relacionadas às mudanças já foram adicionadas ao repositório; lembre-se de aplicar em ambientes de produção (backup e ordem de migração apropriada par
+
+a multi-tenant quando aplicável).
+
+## O que falta fazer
+
+- Revisar mensagens de erro para conversao de m2 em movimentos invalidos (saldo e dimensoes).
