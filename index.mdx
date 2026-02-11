@@ -1,0 +1,135 @@
+> ## Índice da Documentação
+> Acesse o índice completo da documentação em: https://developers.nortgraf.com.br/llms.txt  
+> Utilize este arquivo para descobrir todas as páginas disponíveis antes de explorar o conteúdo.
+
+# Nortgraf · Documentação para Desenvolvedores
+
+> Bem-vindo à documentação oficial da **Nortgraf**, a plataforma SaaS para gráficas e lojas virtuais, construída sobre o **nortOS**.
+
+Aqui você encontra tudo o que precisa para **entender, operar, integrar e evoluir** a Nortgraf: catálogo, pedidos, produção, estoque, pagamentos, multi-tenancy, infraestrutura e automações.
+
+---
+
+## Comece por aqui
+
+Entenda rapidamente como o sistema funciona e como tudo se conecta.
+
+<Card title="Guia rápido" icon="rocket" horizontal href="/quickstart">
+  Coloque a documentação em funcionamento e entenda a estrutura do projeto em poucos minutos.
+</Card>
+
+<Columns cols={2}>
+  <Card title="Visão geral da arquitetura" icon="layer-group" href="/architecture/overview">
+    Como a Nortgraf é organizada: Control Plane, tenants, serviços, storage e gateways.
+  </Card>
+
+  <Card title="Tenancy & provisionamento" icon="building" href="/tenants/overview">
+    Como lojas são criadas, isoladas, versionadas e atualizadas com segurança.
+  </Card>
+
+  <Card title="Ambiente & deploy" icon="server" href="/ops/deploy">
+    Padrões de deploy, releases, migrations e boas práticas operacionais.
+  </Card>
+
+  <Card title="Convenções do projeto" icon="sliders" href="/conventions">
+    Padrões de código, nomenclaturas, estrutura de pastas e regras arquiteturais.
+  </Card>
+</Columns>
+
+---
+
+## Módulos principais
+
+Os pilares funcionais da plataforma, do catálogo à produção.
+
+<Columns cols={2}>
+  <Card title="Catálogo & precificação" icon="tags" href="/modules/catalog">
+    Precificação por quantidade, metro quadrado e demanda — regras e exibição.
+  </Card>
+
+  <Card title="Pedidos & checkout" icon="cart-shopping" href="/modules/orders">
+    Criação de pedidos, cálculo de totais, frete, cupons, créditos e status.
+  </Card>
+
+  <Card title="Produção (OP / Kanban)" icon="clipboard-list" href="/modules/production">
+    Ciclo da OP, workflows configuráveis, eventos, QR Code e chão de fábrica.
+  </Card>
+
+  <Card title="Estoque & custos" icon="boxes-stacked" href="/modules/inventory">
+    Insumos, movimentações, fornecedores, custos diretos e rentabilidade.
+  </Card>
+</Columns>
+
+---
+
+## Pagamentos & integrações
+
+Arquitetura de gateways, fluxos de pagamento e integrações externas.
+
+<Columns cols={2}>
+  <Card title="Arquitetura de pagamentos" icon="credit-card" href="/payments/overview">
+    Estratégia de gateways (Strategy + Factory) e separação entre pedido e pagamento.
+  </Card>
+
+  <Card title="PagBank Connect (OAuth)" icon="link" href="/payments/pagbank">
+    Fluxo OAuth, escopos, sandbox e erros comuns (415, invalid_token).
+  </Card>
+
+  <Card title="Asaas" icon="file-invoice-dollar" href="/payments/asaas">
+    PIX, boletos, headers, regras de origem e observações da integração.
+  </Card>
+
+  <Card title="Stripe (notas e roadmap)" icon="bolt" href="/payments/stripe">
+    Assinaturas, prorrata, planos e migração de gateways.
+  </Card>
+</Columns>
+
+---
+
+## Operação, infraestrutura e segurança
+
+Como rodar a Nortgraf em produção com previsibilidade e segurança.
+
+<Columns cols={2}>
+  <Card title="MySQL & grants" icon="database" href="/ops/mysql">
+    Containers, permissões mínimas, gestão de bancos por tenant e recuperação.
+  </Card>
+
+  <Card title="Backups & restauração" icon="life-ring" href="/ops/backups">
+    Estratégia de snapshots, dumps e recuperação completa do ambiente.
+  </Card>
+
+  <Card title="Arquivos & storage (R2)" icon="cloud" href="/ops/storage">
+    Uploads, CDN, segregação por tenant e ciclo de vida dos arquivos.
+  </Card>
+
+  <Card title="Segurança & exposição" icon="shield-halved" href="/ops/security">
+    Firewall, Cloudflare, exposição de banco, incidentes e lições aprendidas.
+  </Card>
+</Columns>
+
+---
+
+## Central de ajuda & interface administrativa
+
+Documentação das telas administrativas e base de conhecimento do sistema.
+
+<Card title="Páginas da Central de Ajuda" icon="book-open" horizontal href="/help-center/index">
+  Documentação das telas do admin, fluxos do sistema e conteúdos de suporte.
+</Card>
+
+---
+
+## Precisa resolver um problema específico?
+
+Comece pelos guias de diagnóstico e histórico de mudanças.
+
+<Columns cols={2}>
+  <Card title="Troubleshooting" icon="wrench" href="/troubleshooting">
+    Padrões de erro, causas raiz e passos de correção.
+  </Card>
+
+  <Card title="Notas de versão & mudanças" icon="scroll" href="/changes">
+    Histórico de versões, migrations e impactos por tenant.
+  </Card>
+</Columns>
