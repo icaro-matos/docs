@@ -1,0 +1,118 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "nortgraf",
+  "colors": {
+    "primary": "#3361b3",
+    "light": "#3271de",
+    "dark": "#2357b1"
+  },
+  "favicon": "/images/icon_nortgraf.png",
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "Documentação",
+          "icon": "book-open-cover",
+          "href": "https://nortgraf.com.br/ajuda"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Guias",
+        "groups": [
+          {
+            "group": "Começando",
+            "pages": [
+              "index"
+            ]
+          },
+          {
+            "group": "Pagamento",
+            "pages": [
+              "asaas"
+            ]
+          },
+          {
+            "group": "Customization",
+            "hidden": true,
+            "pages": [
+              "essentials/settings",
+              "essentials/navigation"
+            ]
+          },
+          {
+            "group": "Writing content",
+            "hidden": true,
+            "pages": [
+              "essentials/markdown",
+              "essentials/code",
+              "essentials/images",
+              "essentials/reusable-snippets"
+            ]
+          },
+          {
+            "group": "AI tools",
+            "hidden": true,
+            "pages": [
+              "ai-tools/cursor",
+              "ai-tools/claude-code",
+              "ai-tools/windsurf"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "hidden": true,
+        "groups": [
+          {
+            "group": "API documentation",
+            "pages": [
+              "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "Endpoint examples",
+            "pages": [
+              "api-reference/endpoint/get",
+              "api-reference/endpoint/create",
+              "api-reference/endpoint/delete",
+              "api-reference/endpoint/webhook"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "logo": {
+    "light": "/images/nortgraf_logo.png",
+    "dark": "/images/nortgraf_logo_branca.png"
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "Suporte",
+        "href": "mailto:suporte@nortgraf.com.br"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://dashboard.mintlify.com"
+    }
+  },
+  "contextual": {
+    "options": [
+     "copy",
+     "view",
+     "chatgpt",
+     "claude",
+     "perplexity",
+     "mcp",
+     "cursor",
+     "vscode"
+   ]
+  }
+}
