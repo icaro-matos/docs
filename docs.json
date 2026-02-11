@@ -29,6 +29,10 @@
             ]
           },
           {
+            "group": "Módulos",
+            "pages": []
+          },
+          {
             "group": "Pagamento",
             "pages": [
               "asaas"
