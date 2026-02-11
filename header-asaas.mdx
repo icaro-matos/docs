@@ -90,9 +90,9 @@ tail -f storage/logs/laravel.log | grep -E "OriginChannelHeaders|AsaasClient"
 
 **Recomendações**:
 
-- Considere fazer um fork do pacote e usar sua versão
-- Ou use patches do Composer (`cweagans/composer-patches`)
-- Documente esta modificação para atualizações futuras do pacote
+- Considerar fazer um fork do pacote e usar nova versão
+- Ou usar patches do Composer (`cweagans/composer-patches`)
+- Documentando esta modificação para atualizações futuras do pacote
 
 ---
 
@@ -627,5 +627,3 @@ tail -f storage/logs/laravel.log | grep "\[AsaasClient\]"
 2. **🟡 Validação produção** - Criar PIX sandbox e confirmar logs
 3. **🟡 Remover debug logs** - Após confirmação que funciona
 4. **🟡 Documentar fork/patch** - Para manutenção do vendor modification
-
-O sistema está agora robusto e pronto para uso em produção multi-tenant com todas as considerações de segurança implementadas.
